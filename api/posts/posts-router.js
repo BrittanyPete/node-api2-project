@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
         })
     }
     Posts.findById(id)
-})
+});
 
 router.post('/', async (req, res) => {
     try{
@@ -54,7 +54,34 @@ router.post('/', async (req, res) => {
             message: 'There was an error while saving the post to the database'
         })
     }
-})
+});
+
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const {body} = req;
+    try {
+        const post = await Posts.findById(id)
+        if (!post) {
+            res.status(404).json({
+                message: 'The post with the specified ID does not exist'
+            })
+        } else {
+            if (!body.title || !body.contents) {
+                res.status(400).json({
+                    message: 'Please provide title and contents for the post'
+                })
+            } else {
+                const updatedPost = await Posts.update(id, body);
+                res.status(200).json(updatedPost);
+            }
+        }
+    }
+    catch (error) {
+        res.status(500).json({
+            message: 'The post information could not be modified'
+        })
+    }
+});
 
 
 module.exports = router;
