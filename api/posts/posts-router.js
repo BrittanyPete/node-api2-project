@@ -25,7 +25,8 @@ router.get('/:id', async (req, res) => {
                 message: 'The post with the specified ID does not exist'
             })
         } else {
-            res.status(201).json(post)
+            console.log('search by id worked')
+            res.status(200).json(post)
         }
     }
     catch (error) {
@@ -34,6 +35,25 @@ router.get('/:id', async (req, res) => {
         })
     }
     Posts.findById(id)
+})
+
+router.post('/', async (req, res) => {
+    try{
+        console.log('req:', req.body)
+        if (!req.body.title || !req.body.contents) {
+            res.status(400).json({
+                message: 'Please provide title and contents for the post'
+            })
+        } else {
+            const newPost = await Posts.insert(req.body);
+            res.status(201).json(newPost);
+        }
+    }
+    catch (error) {
+        res.status(500).json({
+            message: 'There was an error while saving the post to the database'
+        })
+    }
 })
 
 
