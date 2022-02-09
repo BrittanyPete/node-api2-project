@@ -78,8 +78,14 @@ router.put('/:id', async (req, res) => {
                     message: 'Please provide title and contents for the post'
                 })
             } else {
-                const updatedPost = await Posts.update(id, { title, contents });
-                res.status(200).json(updatedPost);
+                Posts.findById(id)
+                .then(({id}) => {
+                    return Posts.findById(id)
+                })
+                Posts.update(id, {title, contents})
+                .then(updatedPost => {
+                    res.status(200).json(updatedPost);
+                })               
             }
         }
     }
@@ -95,14 +101,13 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const post = await Posts.findById(id)
-        if (post == null) {
+        if (!post) {
             res.status(404).json({
                 message: 'The post with the specified ID does not exist'
             })
-            return;
         } else {
-            const deletedPost = await Posts.remove(id);
-            res.json(deletedPost);
+            await Posts.remove(id);
+            res.json(post);
         }
     }
     catch (error) {
